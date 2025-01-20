@@ -53,7 +53,7 @@ jobs:
             fi
 
             # Ensure the repository directory exists, clone if not
-            if [ ! -d "auth-service" ]; then
+            if [ ! -d "mundo-camiones-auth-service" ]; then
               echo "Directory does not exist. Cloning repository..."
               # Use the GitHub SSH key to pull the latest code
               echo "${{ secrets.TMS_GITHUB_SSHKEY }}" > ~/.ssh/tmsa_github_id_rsa
@@ -66,7 +66,7 @@ jobs:
             fi
 
             # Navigate to the repository directory
-            cd auth-service
+            cd mundo-camiones-auth-service
 
             # Use the GitHub SSH key to pull the latest code
             echo "${{ secrets.TMS_GITHUB_SSHKEY }}" > ~/.ssh/tmsa_github_id_rsa
@@ -95,7 +95,7 @@ jobs:
           script: |
             echo "Connected to EC2 for deployment"
 
-            cd auth-service
+            cd mundo-camiones-auth-service
 
             rm .env
             echo "MONGO_URI=${{ vars.MONGO_URI }}" >> .env
