@@ -15,13 +15,21 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "Connected to EC2 for cleanup"
-            sudo apt update && sudo apt upgrade -y
-            curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
-            sudo apt install -y nodejs
-            echo "Node Installed"
+            echo "Connected to EC2 for setup"
+
+            # Check if Node.js is already installed
+            if ! command -v node &> /dev/null; then
+                echo "Node.js not found. Installing..."
+                # Install Node.js using the NodeSource repository
+                curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash -
+                sudo yum install -y nodejs
+            else
+                echo "Node.js is already installed. Version: $(node -v)"
+            fi
+
+            echo "Node.js installation completed"
 
   clone_repo:
     runs-on: ubuntu-latest
@@ -33,7 +41,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             echo "Connected to EC2 for setup"
 
@@ -45,32 +53,32 @@ jobs:
             fi
 
             # Ensure the repository directory exists, clone if not
-            if [ ! -d "auction-service" ]; then
+            if [ ! -d "auth-service" ]; then
               echo "Directory does not exist. Cloning repository..."
               # Use the GitHub SSH key to pull the latest code
-              echo "${{ secrets.TMS_GITHUB_SSHKEY }}" > ~/.ssh/github_id_rsa
-              chmod 600 ~/.ssh/github_id_rsa
+              echo "${{ secrets.TMS_GITHUB_SSHKEY }}" > ~/.ssh/tmsa_github_id_rsa
+              chmod 600 ~/.ssh/tmsa_github_id_rsa
               eval $(ssh-agent)
-              ssh-add ~/.ssh/github_id_rsa
+              ssh-add ~/.ssh/tmsa_github_id_rsa
               git clone git@github.com:exagonsoft/mundo-camiones-auth-service.git
             else
               echo "Directory exists. No need to clone."
             fi
 
             # Navigate to the repository directory
-            cd auction-service
+            cd auth-service
 
             # Use the GitHub SSH key to pull the latest code
-            echo "${{ secrets.TMS_GITHUB_SSHKEY }}" > ~/.ssh/github_id_rsa
-            chmod 600 ~/.ssh/github_id_rsa
+            echo "${{ secrets.TMS_GITHUB_SSHKEY }}" > ~/.ssh/tmsa_github_id_rsa
+            chmod 600 ~/.ssh/tmsa_github_id_rsa
             eval $(ssh-agent)
-            ssh-add ~/.ssh/github_id_rsa
+            ssh-add ~/.ssh/tmsa_github_id_rsa
 
             git fetch origin master
             git reset --hard origin/master
             echo "GitHub Repo Updated"
 
-            rm ~/.ssh/github_id_rsa
+            rm ~/.ssh/tmsa_github_id_rsa
             echo "Setup completed"
 
   deploy:
@@ -83,11 +91,11 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             echo "Connected to EC2 for deployment"
 
-            cd auction-service
+            cd auth-service
 
             rm .env
             echo "MONGO_URI=${{ vars.MONGO_URI }}" >> .env
