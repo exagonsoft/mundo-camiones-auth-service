@@ -107,6 +107,10 @@ jobs:
           script: |
             echo "Connected to EC2 for deployment"
 
+            echo "Installing required libraries..."
+            sudo yum update -y
+            sudo yum install -y libxcrypt-compat
+
             # Navigate to the repository directory
             cd mundo-camiones-auth-service
 
