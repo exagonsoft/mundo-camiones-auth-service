@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 4000
 
 # Command to run the application
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start:dev"]
