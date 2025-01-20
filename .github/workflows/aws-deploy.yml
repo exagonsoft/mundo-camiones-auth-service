@@ -86,7 +86,7 @@ jobs:
     needs: clone_repo
 
     steps:
-      - name: Connect to EC2 via SSH to Deploy
+      - name: Connect to EC2 via SSH to Deploy with Docker
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -95,8 +95,10 @@ jobs:
           script: |
             echo "Connected to EC2 for deployment"
 
+            # Navigate to the repository directory
             cd mundo-camiones-auth-service
 
+            # Create or update the .env file
             rm .env
             echo "MONGO_URI=${{ vars.MONGO_URI }}" >> .env
             echo "JWT_SECRET=${{ vars.JWT_SECRET }}" >> .env
@@ -104,6 +106,29 @@ jobs:
 
             echo "Env file Created"
 
-            sudo npm install
+            # Check if Docker is installed and install if not
+            if ! command -v docker &> /dev/null; then
+              echo "Docker not found. Installing..."
+              curl -fsSL https://get.docker.com -o get-docker.sh
+              sh get-docker.sh
+              sudo usermod -aG docker $USER
+            else
+              echo "Docker is already installed. Version: $(docker --version)"
+            fi
 
-            echo "CI/CD finished Success"
+            # Check if Docker Compose is installed and install if not
+            if ! command -v docker-compose &> /dev/null; then
+              echo "Docker Compose not found. Installing..."
+              sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            else
+              echo "Docker Compose is already installed. Version: $(docker-compose --version)"
+            fi
+
+            # Build and start the Docker container
+            docker-compose down
+            docker-compose build
+            docker-compose up -d
+
+            echo "Application deployed using Docker successfully"
+

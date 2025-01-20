@@ -1,0 +1,15 @@
+services:
+  app:
+    container_name: mundo-camiones-auth-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000" # Map container port 4000 to host port 4000
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - APP_PORT=${APP_PORT}
+    volumes:
+      - .:/usr/src/app
+    restart: unless-stopped
