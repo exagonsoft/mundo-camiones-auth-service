@@ -1,16 +1,14 @@
 /* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserSchema } from './db/models/user.schema';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGO_URI), // Connection string from .env
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    ConfigModule.forRoot(),
+    MongooseModule.forRoot(process.env.MONGO_URI),
+    AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
