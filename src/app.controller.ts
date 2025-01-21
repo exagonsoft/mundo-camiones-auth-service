@@ -7,6 +7,7 @@ export class AppController {
 
   @Get("health")
   getHello(): string {
+    console.log("Check Health");
     return "Hello";
   }
 }
