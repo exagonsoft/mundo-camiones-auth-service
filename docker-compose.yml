@@ -10,6 +10,6 @@ services:
       - MONGO_URI=${MONGO_URI}
       - JWT_SECRET=${JWT_SECRET}
       - APP_PORT=${APP_PORT}
-    volumes:
-      - .:/usr/src/app
+    env_file:
+      .env
     restart: unless-stopped
