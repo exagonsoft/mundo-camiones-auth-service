@@ -9,9 +9,15 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: allowedDomains, // Allowed origins
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed HTTP methods
-    credentials: true, // Include cookies in CORS
+    origin: (origin, callback) => {
+      if (!origin || allowedDomains.includes(origin) || origin.endsWith('.martinnotaryfl.com')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
   });
 
   // Enable global exception filter
