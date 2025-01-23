@@ -7,10 +7,19 @@ import { AllExceptionsFilter } from './common/all-exceptions.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.use((req, res, next) => {
+    console.log('Incoming headers:', req.headers);
+    next();
+  });
+
   // Enable CORS
   app.enableCors({
     origin: (origin, callback) => {
-      if (!origin || allowedDomains.includes(origin) || origin.endsWith('.martinnotaryfl.com')) {
+      if (
+        !origin ||
+        allowedDomains.includes(origin) ||
+        origin.endsWith('.martinnotaryfl.com')
+      ) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
@@ -27,4 +36,3 @@ async function bootstrap() {
   console.log(`🚀 APP running on port ${process.env.APP_PORT}`);
 }
 bootstrap();
-
