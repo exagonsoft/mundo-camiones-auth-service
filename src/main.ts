@@ -22,6 +22,8 @@ async function bootstrap() {
       ) {
         callback(null, true);
       } else {
+        console.log("ORIGIN NOT ALLOWED :", origin);
+        
         callback(new Error('Not allowed by CORS'));
       }
     },
