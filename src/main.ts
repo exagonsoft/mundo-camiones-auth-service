@@ -8,7 +8,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use((req, res, next) => {
-    console.log('Incoming headers:', req.headers);
     next();
   });
 
@@ -23,7 +22,6 @@ async function bootstrap() {
         callback(null, true);
       } else {
         console.log("ORIGIN NOT ALLOWED :", origin);
-        
         callback(new Error('Not allowed by CORS'));
       }
     },

@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Get } from '@nestjs/common';
 
-@Controller()
+@Controller("health")
 export class AppController {
   constructor() {}
 
-  @Get("health")
-  getHello(): string {
-    return "Hello";
+  @Get()
+  getHealth(): string {
+    return "❤️ User Service Is Healthy ❤️";
   }
 }
